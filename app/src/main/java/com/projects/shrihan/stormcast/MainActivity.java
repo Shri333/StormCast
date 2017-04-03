@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                     city = addresses.get(0).getLocality();
                     state = addresses.get(0).getAdminArea();
                     state_code = states.get(state);
-                    alert_url = alert_url + state_code + "/" + city + ".json";
+                    //alert_url = alert_url + state_code + "/" + city + ".json";
 
                     getSupportLoaderManager().initLoader(ALERT_LOADER_ID, null, MainActivity.this).forceLoad();
                 }
@@ -307,7 +307,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public Loader<Alert> onCreateLoader(int id, Bundle args) {
         URL url = null;
         try {
-            url = new URL(alert_url);
+            String tempUrl = alert_url + state_code + "/" + city + ".json";
+            url = new URL(tempUrl);
         } catch (MalformedURLException e) {
             Log.e(TAG, e.getLocalizedMessage());
             e.printStackTrace();

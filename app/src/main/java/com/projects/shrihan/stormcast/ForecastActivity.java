@@ -31,7 +31,7 @@ public class ForecastActivity extends AppCompatActivity implements LoaderManager
 
 
     //private static String forecast_url = "http://api.wunderground.com/api/" + api_key + "/conditions/q/" + state_code + "/" + city + ".json";
-    private static String forecast_url = "http://api.wunderground.com/api/";
+    private String forecast_url = "http://api.wunderground.com/api/";
 
     private TextView mArea;
     private TextView mWeather;
