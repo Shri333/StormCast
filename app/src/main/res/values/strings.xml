@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">StormCast</string>
+    <string name="connection_error">No internet connection to download weather alerts. Please check the connection.</string>
+    <string name="location_error">Please enable Location to download weather alerts.</string>
+</resources>
