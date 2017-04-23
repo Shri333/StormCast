@@ -238,6 +238,7 @@ public final class QueryUtils {
         return output.toString();
     }
 
+    // query alerts
     static Alert extractJsonData_Alert(String jsonResponse) {
         try {
             //jsonResponse = SAMPLE_ALERT;
@@ -261,6 +262,8 @@ public final class QueryUtils {
         }
     }
 
+
+    // query forecast
     static Forecast extractJsonData_Forecast(String jsonResponse) {
         try {
             //jsonResponse = SAMPLE_FORECAST;

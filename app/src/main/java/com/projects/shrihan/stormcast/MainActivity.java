@@ -2,6 +2,7 @@ package com.projects.shrihan.stormcast;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -36,6 +37,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private static final String api_key = "42b5749a5bd9ee14";
     private static final int TAG_CODE_PERMISSION_LOCATION = 6;
     private static final int ALERT_LOADER_ID = 1;
+    private static final String ALERT_SHARED_PREFS = "ALERT_PREFS";
+    private static final long TEN_MINUTES = 10 * 60 * 1000;
+    public static final String PREFS_TIME_KEY = "time_prefs";
+    public static final String PREFS_DESCRIPTION_KEY = "description_prefs";
+    public static final String PREFS_DATE_KEY = "date_prefs";
+    public static final String PREFS_EXPIRY_KEY = "expiry_prefs";
+    public static final String PREFS_TYPE_KEY = "type_prefs";
+    public static final String PREFS_MESSAGEE_KEY = "messagee_prefs";
 
     private String state = null;
     private String city = null;
@@ -168,6 +177,18 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mLoadingIndicator = findViewById(R.id.loading_indicator);
         mAlertLayoutView = findViewById(R.id.weather_id);
 
+        boolean isTimeElapsed = checkTimestamp();
+        if (!isTimeElapsed) {
+            SharedPreferences sharedPref = getSharedPreferences(ALERT_SHARED_PREFS, Context.MODE_PRIVATE);
+            Alert tempAlert = new Alert(sharedPref.getString(PREFS_TYPE_KEY, ""),
+                    sharedPref.getString(PREFS_DESCRIPTION_KEY, "No alerts"),
+                    sharedPref.getString(PREFS_DATE_KEY, ""),
+                    sharedPref.getString(PREFS_EXPIRY_KEY, ""),
+                    sharedPref.getString(PREFS_MESSAGEE_KEY, ""));
+            updateUi(tempAlert);
+            return;
+        }
+
         NetworkInfo ni = QueryUtils.getNetworkInfo(this);
         if (ni == null || !ni.isConnected() ||
                 (ni.getType() != ConnectivityManager.TYPE_WIFI && ni.getType() != ConnectivityManager.TYPE_MOBILE)) {
@@ -194,12 +215,25 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mAlertLayoutView.setVisibility(View.GONE);
     }
 
+    private boolean checkTimestamp() {
+        SharedPreferences sharedPref = getSharedPreferences(ALERT_SHARED_PREFS, Context.MODE_PRIVATE);
+        long prevTime = -1;
+        if(sharedPref != null)
+            prevTime = sharedPref.getLong(PREFS_TIME_KEY, 0);
+
+        long curTime = System.currentTimeMillis();
+        boolean isElapsed = (curTime - prevTime) > TEN_MINUTES;
+        return isElapsed;
+    }
+
+    // button for detailactivity
     public void onViewAlert(View view) {
         Intent intent = new Intent(this, DetailActivity.class);
         intent.putExtra("alert", mAlert);
         startActivity(intent);
     }
 
+    // button for forecastactivity
     public void onCheckForecast(View view) {
         Intent intent = new Intent(this, ForecastActivity.class);
         intent.putExtra("city", city);
@@ -208,6 +242,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         startActivity(intent);
     }
 
+    // updateUi for loader
     private void updateUi(Alert alert) {
         mAlert = alert;
         mLoadingIndicator.setVisibility(View.GONE);
@@ -318,11 +353,24 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onLoadFinished(Loader<Alert> loader, Alert data) {
+        saveAlert(data);
         updateUi(data);
     }
 
     @Override
     public void onLoaderReset(Loader<Alert> loader) {
+    }
+
+    private void saveAlert(Alert alert) {
+        SharedPreferences sharedPref = getSharedPreferences(ALERT_SHARED_PREFS, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putLong(PREFS_TIME_KEY, System.currentTimeMillis());
+        editor.putString(PREFS_DESCRIPTION_KEY, alert.getDescription());
+        editor.putString(PREFS_TYPE_KEY, alert.getType());
+        editor.putString(PREFS_MESSAGEE_KEY, alert.getMessage());
+        editor.putString(PREFS_DATE_KEY, alert.getDate());
+        editor.putString(PREFS_EXPIRY_KEY, alert.getExpires());
+        editor.commit();
     }
 }
 

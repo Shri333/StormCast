@@ -20,7 +20,6 @@ public class ForecastActivity extends AppCompatActivity implements LoaderManager
     private static final int FORECAST_LOADER_ID = 2;
 
     private static final long ONE_HOUR = 60 * 60 * 1000;
-    public static final String PREFS_NAME = "FORECAST_PREFS";
     public static final String PREFS_DATE_KEY = "date_prefs";
     public static final String PREFS_AREA_KEY = "area_prefs";
     public static final String PREFS_WEATHER_KEY = "weather_prefs";
@@ -30,7 +29,6 @@ public class ForecastActivity extends AppCompatActivity implements LoaderManager
     public static final String PREFS_DEWPOINT_KEY = "dewpoint_prefs";
 
 
-    //private static String forecast_url = "http://api.wunderground.com/api/" + api_key + "/conditions/q/" + state_code + "/" + city + ".json";
     private String forecast_url = "http://api.wunderground.com/api/";
 
     private TextView mArea;
@@ -84,6 +82,7 @@ public class ForecastActivity extends AppCompatActivity implements LoaderManager
         }
     }
 
+    // saves forecast until 1 hour (forecast resets every 1 hour)
     private boolean checkTimestamp() {
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
         long prevTime = -1;
@@ -94,14 +93,6 @@ public class ForecastActivity extends AppCompatActivity implements LoaderManager
         boolean isElapsed = (curTime - prevTime) > ONE_HOUR;
         return isElapsed;
     }
-
-//    private long getTimestamp() {
-//        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-//        long time = -1;
-//        if(sharedPref != null)
-//            time = sharedPref.getLong(PREFS_DATE_KEY, -1);
-//        return time;
-//    }
 
     private void saveForecast(Forecast forecast) {
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
@@ -148,23 +139,3 @@ public class ForecastActivity extends AppCompatActivity implements LoaderManager
 
     }
 }
-
-//    private class GetForecastData extends AsyncTask<URL, Void, Forecast> {
-//
-//        @Override
-//        protected Forecast doInBackground(URL... params) {
-//            URL url = params[0];
-//            try {
-//                String jsonResponse = QueryUtils.makeHttpRequest(url);
-//                return QueryUtils.extractJsonData_Forecast(jsonResponse);
-//            } catch (IOException e) {
-//                Log.e(TAG, "IOException");
-//            }
-//            return null;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(Forecast forecast) {
-//            updateUi(forecast);
-//        }
-//    }

@@ -8,9 +8,10 @@ import java.io.IOException;
 import java.net.URL;
 
 /**
- * Created by prathap on 3/30/2017.
+ * Created by shrihan on 3/30/2017.
  */
 
+// loader for forecast
 public class ForecastLoader extends AsyncTaskLoader<Forecast> {
     private URL mUrl;
     private static final String TAG = "ForecastLoader";
